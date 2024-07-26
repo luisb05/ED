@@ -1,16 +1,10 @@
-# from django.urls import path
-# from . import views
-
-# urlpatterns = [
-#     path('index/', views.index, name='index'),
-# ]
-
 from django.contrib import admin
 from django.urls import path
-from . import views  # Assuming you have views in the current directory
+from . import views  # Asegúrate de que tienes las vistas importadas
 
 urlpatterns = [
-    path('', views.index, name='index'),  # Add this line
-    path('index/', views.index, name='index'),
+    path('', views.index_view, name='index'),
+    path('index/', views.index_view, name='index'),
+    path('busquedas/', views.busquedas_view, name='busquedas'),
     path('admin/', admin.site.urls),
 ]

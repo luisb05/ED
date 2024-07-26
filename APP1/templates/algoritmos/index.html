@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}
+    <title>Grupo 1 - Estructura de Datos</title>
+    {% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        #sidebar-wrapper {
+            height: 100%;
+            width: 250px;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: #fff;
+            transition: all 0.3s ease;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 20px;
+            overflow-y: auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            border-right: 1px solid #004085;
+        }
+        .sidebar-heading {
+            padding: 20px;
+            background: #0056b3;
+            color: #fff;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #003d7a;
+        }
+        .sidebar-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background 0.3s, color 0.3s, padding-left 0.3s;
+            border-left: 5px solid transparent;
+        }
+        .sidebar-item:hover, .sidebar-item:focus {
+            background: #003d7a;
+            color: #fff;
+            border-left: 5px solid #f8f9fa;
+            padding-left: 25px;
+            outline: none;
+        }
+        .sidebar-item.active {
+            background: #003d7a;
+            color: #fff;
+            border-left: 5px solid #f8f9fa;
+            padding-left: 25px;
+        }
+        .sidebar-item i {
+            margin-right: 10px;
+        }
+        .submenu {
+            background: #003d7a;
+            border-radius: 0 0 5px 5px;
+            padding-top: 10px;
+            display: none; /* Hide submenu by default */
+        }
+        .submenu.show {
+            display: block; /* Show submenu when toggled */
+        }
+        .submenu .list-group-item {
+            background: #002d62;
+            color: #b0bec5;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .submenu .list-group-item:hover {
+            background: #0056b3;
+            color: #fff;
+        }
+        .wrapper {
+            display: flex;
+            align-items: stretch;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            transition: all 0.3s ease;
+            margin-left: 250px;
+            background-color: #fff;
+        }
+        #menu-toggle {
+            cursor: pointer;
+            margin-bottom: 20px;
+            background: #0056b3;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 18px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        #menu-toggle:hover, #menu-toggle:focus {
+            background: #003d7a;
+            transform: scale(1.05);
+            outline: none;
+        }
+        .toggled #sidebar-wrapper {
+            width: 0;
+            box-shadow: none;
+            border: none;
+        }
+        .toggled .content {
+            margin-left: 0;
+        }
+        @media (max-width: 768px) {
+            #sidebar-wrapper {
+                width: 0;
+                position: relative;
+                box-shadow: none;
+            }
+            .content {
+                margin-left: 0;
+            }
+            .toggled #sidebar-wrapper {
+                width: 250px;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+                border: 1px solid #004085;
+            }
+            .toggled .content {
+                margin-left: 250px;
+            }
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <nav id="sidebar-wrapper">
+        <div class="sidebar-heading">ESCRUCTURA DE DATOS (GRUPO 1)</div>
+        <a href="{% url 'index' %}" class="sidebar-item">
+            <i class="glyphicon glyphicon-home"></i> Inicio
+        </a>
+        <a href="#" class="sidebar-item" id="toggle-submenu">
+            <i class="glyphicon glyphicon-list"></i> Todos los contenidos
+        </a>
+        <div id="submenu" class="submenu">
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Estructuras de datos básicas:</strong> <span class="badge badge-primary badge-pill">{{ num_books }}</span>
+                </li>                
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Pilas:</strong> <span class="badge badge-primary badge-pill">{{ num_instances_available }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Colas:</strong> <span class="badge badge-primary badge-pill">{{ num_authors }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{% url 'busquedas' %}" class="text-decoration-none text-dark">
+                        <strong>Algoritmos de Busquedas:</strong> 
+                        <span class="badge badge-primary badge-pill">{{ num_instances }}</span>
+                    </a>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Algoritmos de ordenamiento:</strong> <span class="badge badge-primary badge-pill">{{ num_instances }}</span>
+                </li>
+            </ul>
+        </div>
+        <a href="#" class="sidebar-item">
+            <i class="glyphicon glyphicon-info-sign"></i> Acerca del grupo
+        </a>
+    </nav>
+
+    <main class="content">
+        <button id="menu-toggle" class="btn btn-primary">
+            <span class="glyphicon glyphicon-menu-hamburger"></span> 
+        </button>
+        {% block content %}
+        {% endblock %}
+    </main>
+</div>
+
+<script>
+    document.getElementById("menu-toggle").addEventListener("click", function () {
+        const wrapper = document.querySelector(".wrapper");
+        const sidebar = document.getElementById("sidebar-wrapper");
+        const isExpanded = wrapper.classList.toggle("toggled");
+        sidebar.setAttribute("aria-expanded", isExpanded);
+    });
+
+    document.getElementById("toggle-submenu").addEventListener("click", function () {
+        const submenu = document.getElementById("submenu");
+        submenu.classList.toggle("show");
+    });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
