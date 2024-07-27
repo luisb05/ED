@@ -196,6 +196,7 @@
     </main>
 </div>
 
+{% block extra_js %}
 <script>
     document.getElementById("menu-toggle").addEventListener("click", function () {
         const wrapper = document.querySelector(".wrapper");
@@ -209,7 +210,7 @@
         submenu.classList.toggle("show");
     });
 </script>
-
+{% endblock %}
 </body>
 </html>
 
