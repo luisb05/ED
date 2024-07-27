@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 import json
 import os
@@ -15,10 +15,10 @@ def load_data():
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
-        print(f"Datos cargados: {data}")
+        print(f"Datos cargados: {data}")  # Debugging print statement
         return data
     except Exception as e:
-        print(f"Error al cargar el archivo JSON: {e}")
+        print(f"Error al cargar el archivo JSON: {e}")  # Debugging print statement
         return []
 
 # Funciones de búsqueda
@@ -48,8 +48,8 @@ def search(request):
     search_type = request.GET.get('type')
     objetivo = request.GET.get('objetivo')
 
-    print(f"Tipo de búsqueda: {search_type}")
-    print(f"Criterio de búsqueda: {objetivo}")
+    print(f"Tipo de búsqueda: {search_type}")  # Debugging print statement
+    print(f"Criterio de búsqueda: {objetivo}")  # Debugging print statement
 
     if not search_type or not objetivo:
         return JsonResponse({'error': 'Invalid request parameters'}, status=400)
@@ -63,6 +63,7 @@ def search(request):
     else:
         result = []
 
-    print(f"Resultados de búsqueda: {result}")
+    print(f"Resultados de búsqueda: {result}")  # Debugging print statement
     return JsonResponse(result, safe=False)
+
 
