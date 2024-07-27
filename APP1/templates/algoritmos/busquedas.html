@@ -1,4 +1,12 @@
 {% extends 'algoritmos/index.html' %}
+{% load static %}
+{% block extra_css %}
+<style>
+    #data-grid h4 {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <section class="container my-4">
@@ -18,104 +26,48 @@
 
 {% block extra_js %}
 <script>
-    const data = {
-        linear: {
-            description: "Busca secuencialmente cada elemento en la lista.",
-            implementation: `
-def busqueda_lineal(lista, objetivo):
-    for i, elemento in enumerate(lista):
-        if elemento == objetivo:
-            return i
-    return -1
-            `,
-            complexity: "O(n)",
-            application: "Se utiliza para buscar elementos en listas no ordenadas."
-        },
-        binary: {
-            description: "Busca en una lista ordenada dividiendo el rango de búsqueda a la mitad.",
-            implementation: `
-def busqueda_binaria(lista, objetivo):
-    bajo = 0
-    alto = len(lista) - 1
-    while bajo <= alto:
-        medio = (bajo + alto) // 2
-        if lista[medio] == objetivo:
-            return medio
-        elif lista[medio] < objetivo:
-            bajo = medio + 1
-        else:
-            alto = medio - 1
-    return -1
-            `,
-            complexity: "O(log n)",
-            application: "Se utiliza para buscar elementos en listas ordenadas."
-        },
-        hash: {
-            description: "Utiliza una función hash para mapear claves a índices.",
-            implementation: `
-def busqueda_por_hash(diccionario, clave):
-    return diccionario.get(clave, None)
-            `,
-            complexity: "O(1)",
-            application: "Se utiliza para la búsqueda rápida de elementos en diccionarios o conjuntos."
-        }
-    };
-
     function showData(type) {
         const dataGrid = document.getElementById('data-grid');
-
-        const info = data[type];
-        const table = `
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Aspecto</th>
-                        <th>Descripción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Descripción</td>
-                        <td>${info.description}</td>
-                    </tr>
-                    <tr>
-                        <td>Implementación en Python</td>
-                        <td><pre class="code-output">${info.implementation}</pre></td>
-                    </tr>
-                    <tr>
-                        <td>Complejidad Computacional</td>
-                        <td>${info.complexity}</td>
-                    </tr>
-                    <tr>
-                        <td>Aplicación</td>
-                        <td>${info.application}</td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
-
-        dataGrid.innerHTML = table;
+        const objetivo = 'A'; // Cambia según el criterio de búsqueda que deseas probar
+        
+        fetch(`/search/?type=${type}&objetivo=${objetivo}`)
+            .then(response => response.json())
+            .then(result => {
+                if (result.length > 0) {
+                    const resultTable = `
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${result.map(item => `
+                                    <tr>
+                                        <td>${item.id}</td>
+                                        <td>${item.nombre}</td>
+                                        <td>${item.valor}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    dataGrid.innerHTML = resultTable;
+                } else {
+                    dataGrid.innerHTML = '<p>No se encontraron resultados.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error al realizar la búsqueda:', error);
+                dataGrid.innerHTML = '<p>Error al realizar la búsqueda. Intente nuevamente.</p>';
+            });
     }
 </script>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-    .code-output {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        padding: 10px;
-        border-radius: 4px;
-        white-space: pre-wrap; /* Preserve whitespace and line breaks */
-        font-family: monospace;
-        margin-top: 10px;
-    }
 
-    #data-grid h4 {
-        margin-top: 20px;
-    }
-</style>
-{% endblock %}
 
 
 

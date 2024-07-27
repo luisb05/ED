@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "nombre": "Item 1",
+        "valor": "A"
+    },
+    {
+        "id": 2,
+        "nombre": "Item 2",
+        "valor": "B"
+    },
+    {
+        "id": 3,
+        "nombre": "Item 3",
+        "valor": "C"
+    },
+    {
+        "id": 4,
+        "nombre": "Item 4",
+        "valor": "D"
+    },
+    {
+        "id": 5,
+        "nombre": "Item 5",
+        "valor": "E"
+    }
+]
+
