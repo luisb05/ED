@@ -2,8 +2,24 @@
 {% load static %}
 {% block extra_css %}
 <style>
-    #data-grid h4 {
+    #data-grid {
+        overflow-x: auto;
+        padding: 20px; /* Opcional: Agrega padding para mejorar la separación del contenido */
+    }
+    .table {
+        min-width: 600px; /* Ajusta el ancho mínimo según tus necesidades */
+        margin: 20px 0; /* Margen superior e inferior para la tabla */
+    }
+    .pagination {
         margin-top: 20px;
+        text-align: center;
+    }
+    .pagination button {
+        margin: 0 5px;
+        padding: 5px 10px;
+    }
+    .pagination span {
+        margin: 0 10px;
     }
 </style>
 {% endblock %}
@@ -16,7 +32,7 @@
         <button class="btn btn-primary" onclick="showData('linear')">Búsqueda Lineal</button>
         <button class="btn btn-primary" onclick="showData('binary')">Búsqueda Binaria</button>
         <button class="btn btn-primary" onclick="showData('hash')">Búsqueda por Hash</button>
-    </div>
+    </div><br/>
 
     <div id="data-grid" class="mt-4">
         <!-- Aquí se mostrará la tabla del datagrid -->
@@ -25,47 +41,78 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ block.super }}
 <script>
+    const pageSize = 10; // Número de registros por página
+    let currentPage = 1;
+    let totalPages = 0;
+    let data = [];
+
     function showData(type) {
         const dataGrid = document.getElementById('data-grid');
         const objetivo = 'A'; // Cambia según el criterio de búsqueda que deseas probar
-        
+
         fetch(`/search/?type=${type}&objetivo=${objetivo}`)
             .then(response => response.json())
             .then(result => {
-                if (result.length > 0) {
-                    const resultTable = `
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nombre</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${result.map(item => `
-                                    <tr>
-                                        <td>${item.id}</td>
-                                        <td>${item.nombre}</td>
-                                        <td>${item.valor}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                    dataGrid.innerHTML = resultTable;
-                } else {
-                    dataGrid.innerHTML = '<p>No se encontraron resultados.</p>';
-                }
+                data = result;
+                totalPages = Math.ceil(data.length / pageSize);
+                currentPage = 1;
+                renderTable();
             })
             .catch(error => {
                 console.error('Error al realizar la búsqueda:', error);
                 dataGrid.innerHTML = '<p>Error al realizar la búsqueda. Intente nuevamente.</p>';
             });
     }
+
+    function renderTable() {
+        const dataGrid = document.getElementById('data-grid');
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const paginatedData = data.slice(start, end);
+
+        const resultTable = `
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${paginatedData.map(item => `
+                            <tr>
+                                <td>${item.id}</td>
+                                <td>${item.nombre}</td>
+                                <td>${item.valor}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(currentPage - 1)">Anterior</button>
+                <span>Página ${currentPage} de ${totalPages}</span>
+                <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(currentPage + 1)">Siguiente</button>
+            </div>
+        `;
+        dataGrid.innerHTML = resultTable;
+    }
+
+    function changePage(page) {
+        if (page < 1 || page > totalPages) return;
+        currentPage = page;
+        renderTable();
+    }
 </script>
 {% endblock %}
+
+
+
+
 
 
 

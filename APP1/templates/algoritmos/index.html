@@ -164,7 +164,7 @@
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Estructuras de datos básicas:</strong> <span class="badge badge-primary badge-pill">{{ num_books }}</span>
-                </li>                
+                </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Pilas:</strong> <span class="badge badge-primary badge-pill">{{ num_instances_available }}</span>
                 </li>
@@ -189,10 +189,9 @@
 
     <main class="content">
         <button id="menu-toggle" class="btn btn-primary">
-            <span class="glyphicon glyphicon-menu-hamburger"></span> 
+            <span class="glyphicon glyphicon-menu-hamburger"></span>
         </button>
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 </div>
 
@@ -211,6 +210,7 @@
     });
 </script>
 {% endblock %}
+
 </body>
 </html>
 
