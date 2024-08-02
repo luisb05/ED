@@ -1,0 +1,103 @@
+{% extends 'algoritmos/index.html' %}
+{% load static %}
+{% block extra_css %}
+<style>
+    #data-grid {
+        overflow-x: auto;
+        padding: 20px;
+    }
+    .table {
+        min-width: 600px;
+        margin: 20px 0;
+    }
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .pagination button {
+        margin: 0 5px;
+        padding: 5px 10px;
+    }
+    .pagination span {
+        margin: 0 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container my-4">
+    <h3>Gestión de Colas (CRUD)</h3>
+
+    <div class="mb-4">
+        <form id="enqueue-form">
+            <div class="form-group">
+                <label for="element-id">ID:</label>
+                <input type="number" id="element-id" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="element-name">Nombre:</label>
+                <input type="text" id="element-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="element-value">Valor:</label>
+                <input type="number" id="element-value" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="performOperation('enqueue')">Añadir Elemento</button>
+        </form>
+        <button class="btn btn-primary mt-2" onclick="performOperation('dequeue')">Eliminar Elemento</button>
+        <button class="btn btn-primary mt-2" onclick="performOperation('peek')">Ver Elemento Frontal</button>
+        <button class="btn btn-primary mt-2" onclick="performOperation('size')">Tamaño de la Cola</button>
+        <button class="btn btn-primary mt-2" onclick="performOperation('is_empty')">¿Está Vacía?</button>
+    </div><br/>
+
+    <div id="data-grid" class="mt-4">
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    function performOperation(operation) {
+        const dataGrid = document.getElementById('data-grid');
+        let url = `/queue/?operation=${operation}`;
+        let method = 'GET';
+        let body = null;
+
+        if (operation === 'enqueue') {
+            url = '/queue/';
+            method = 'POST';
+            const id = document.getElementById('element-id').value;
+            const name = document.getElementById('element-name').value;
+            const value = document.getElementById('element-value').value;
+            body = JSON.stringify({ item: { id: id, nombre: name, valor: value } });
+        } else if (operation === 'dequeue') {
+            url = '/queue/';
+            method = 'DELETE';
+        }
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    dataGrid.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+                    if (operation === 'enqueue') {
+                        document.getElementById('enqueue-form').reset();
+                    }
+                } else {
+                    dataGrid.innerHTML = `<p>${result.error}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error al realizar la operación:', error);
+                dataGrid.innerHTML = '<p>Error al realizar la operación. Intente nuevamente.</p>';
+            });
+    }
+</script>
+{% endblock %}

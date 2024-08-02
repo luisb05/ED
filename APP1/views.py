@@ -1,11 +1,18 @@
 from django.http import JsonResponse
 from django.conf import settings
 from django.shortcuts import render
+from collections import deque
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
 import json
 import os
 
 def index_view(request):
     return render(request, 'algoritmos/index.html')
+
+def colas_view(request):
+    return render(request, 'algoritmos/colas.html')
 
 def pilas_view(request):
     return render(request, 'algoritmos/pilas.html')
@@ -17,62 +24,179 @@ def ordenamiento_view(request):
     return render(request, 'algoritmos/ordenamientos.html')
 
 #Esctructura de Datos lineales
-def load_data_pila():
-    file_path = os.path.join('app1', 'static', 'json', 'datospilas.json')
+
+# Función para cargar datos de cola------------------------------------------------------------------
+# Ruta del archivo JSON
+FILE_PATH = os.path.join('APP1', 'static', 'json', 'datacola.json')
+
+# Función para cargar datos de cola
+def load_dataCola():
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(FILE_PATH, 'r', encoding='utf-8') as file:
             data = json.load(file)
-        return data.get('pila', [])
+        return deque(data.get('cola', []))  # Convertir a deque para manejar la cola
     except Exception as e:
         print(f"Error al cargar el archivo JSON: {e}")
-        return []
+        return deque()
 
-# Funciones de Pilas       
-def esta_vacia(pila):
-    return len(pila) == 0
-
-def push(pila, item):
-    pila.append(item)
-
-def pop(pila):
-    if not esta_vacia(pila):
-        return pila.pop()
-    else:
-        raise IndexError("La pila está vacía")
-
-def peek(pila):
-    if not esta_vacia(pila):
-        return pila[-1]
-    else:
-        raise IndexError("La pila está vacía")
-
-def tamano(pila):
-    return len(pila)
-
-# Vista de Pilas
-def pila_view(request):
-    pila = load_data_pila()
-
-    if not pila:
-        return JsonResponse({'error': 'Datos no encontrados'}, status=404)
-
+# Función para guardar datos de cola
+def save_dataCola(queue):
     try:
-        # Ejemplo de operaciones con la pila
-        push(pila, {"id": 6, "nombre": "Elemento 6", "valor": 60})
-        top_element = peek(pila)
-        pop(pila)
-
-        result = {
-            "stack": pila,
-            "top_element": top_element
-        }
+        with open(FILE_PATH, 'w', encoding='utf-8') as file:
+            json.dump({'cola': list(queue)}, file, indent=4)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        print(f"Error al guardar el archivo JSON: {e}")
 
-    return JsonResponse(result, safe=False)
+# Funciones de Colas
+def enqueue(queue, item):
+    queue.append(item)
 
+def dequeue(queue):
+    if not is_empty(queue):
+        return queue.popleft()
+    raise IndexError("Dequeue from empty queue")
 
-#Algoritmo de Busqueda
+def peek(queue):
+    if not is_empty(queue):
+        return queue[0]
+    raise IndexError("Peek from empty queue")
+
+def is_empty(queue):
+    return len(queue) == 0
+
+def size(queue):
+    return len(queue)
+
+# Vista de Colas (CRUD)
+@csrf_exempt
+@require_http_methods(["GET", "POST", "DELETE"])
+def queue_view(request):
+    queue = load_dataCola()  # Cargar la cola
+
+    if request.method == "GET":
+        operation = request.GET.get('operation')
+        try:
+            if operation == 'peek':
+                item = peek(queue)
+                return JsonResponse({'success': True, 'item': item})
+            elif operation == 'size':
+                return JsonResponse({'success': True, 'size': size(queue)})
+            elif operation == 'is_empty':
+                return JsonResponse({'success': True, 'is_empty': is_empty(queue)})
+            else:
+                return JsonResponse({'error': 'Operation not recognized'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            item = body.get('item')
+            if item:
+                enqueue(queue, item)
+                save_dataCola(queue)
+                return JsonResponse({'success': True, 'queue': list(queue)})
+            else:
+                return JsonResponse({'error': 'No item provided'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif request.method == "DELETE":
+        try:
+            item = dequeue(queue)
+            save_dataCola(queue)
+            return JsonResponse({'success': True, 'item': item, 'queue': list(queue)})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+# Función para cargar datos de pilas-------------------------------------------------------------------------
+FILE_PATH = os.path.join('app1', 'static', 'json', 'datapila.json')
+
+# Función para cargar datos de pila
+def load_dataStack():
+    try:
+        with open(FILE_PATH, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        return deque(data.get('pila', []))  # Convertir a deque para manejar la pila
+    except Exception as e:
+        print(f"Error al cargar el archivo JSON: {e}")
+        return deque()
+
+# Función para guardar datos de pila
+def save_dataStack(stack):
+    try:
+        with open(FILE_PATH, 'w', encoding='utf-8') as file:
+            json.dump({'pila': list(stack)}, file, indent=4)
+    except Exception as e:
+        print(f"Error al guardar el archivo JSON: {e}")
+
+# Funciones de Pila
+def push(stack, item):
+    stack.append(item)
+
+def pop(stack):
+    if not is_empty(stack):
+        return stack.pop()
+    raise IndexError("Pop from empty stack")
+
+def peek(stack):
+    if not is_empty(stack):
+        return stack[-1]
+    raise IndexError("Peek from empty stack")
+
+def is_empty(stack):
+    return len(stack) == 0
+
+def size(stack):
+    return len(stack)
+
+# Vista de Pila (CRUD)
+@csrf_exempt
+@require_http_methods(["GET", "POST", "DELETE"])
+def stack_view(request):
+    stack = load_dataStack()  # Cargar la pila
+
+    if request.method == "GET":
+        operation = request.GET.get('operation')
+        try:
+            if operation == 'peek':
+                item = peek(stack)
+                return JsonResponse({'success': True, 'item': item})
+            elif operation == 'size':
+                return JsonResponse({'success': True, 'size': size(stack)})
+            elif operation == 'is_empty':
+                return JsonResponse({'success': True, 'is_empty': is_empty(stack)})
+            else:
+                return JsonResponse({'error': 'Operation not recognized'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            item = body.get('item')
+            if item:
+                push(stack, item)
+                save_dataStack(stack)
+                return JsonResponse({'success': True, 'stack': list(stack)})
+            else:
+                return JsonResponse({'error': 'No item provided'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif request.method == "DELETE":
+        try:
+            item = pop(stack)
+            save_dataStack(stack)
+            return JsonResponse({'success': True, 'item': item, 'stack': list(stack)})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+            
+#Algoritmo de Busqueda------------------------------------------------------------------------------------
 def load_data():
     file_path = os.path.join('app1', 'static', 'json', 'datosbusquedas.json')
     try:
@@ -149,7 +273,7 @@ def search(request):
     print(f"Resultados de búsqueda: {result}")
     return JsonResponse(result, safe=False)
 
-#Algoritmo de Ordenamiento
+#Algoritmo de Ordenamiento-----------------------------------------------------------------------------------
 
 def load_dataOrdenamiento(algorithm):
     file_path = os.path.join('app1', 'static', 'json', 'datosordenamiento.json')

@@ -26,10 +26,28 @@
 
 {% block content %}
 <section class="container my-4">
-    <h3>Pilas</h3>
-    
+    <h3>Gestión de Pilas (CRUD)</h3>
+
     <div class="mb-4">
-        <button class="btn btn-primary" onclick="showPilaData()">Mostrar Pila</button>
+        <form id="push-form">
+            <div class="form-group">
+                <label for="element-id">ID:</label>
+                <input type="number" id="element-id" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="element-name">Nombre:</label>
+                <input type="text" id="element-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="element-value">Valor:</label>
+                <input type="number" id="element-value" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="performOperation('push')">Añadir Elemento</button>
+        </form>
+        <button class="btn btn-primary mt-2" onclick="performOperation('pop')">Eliminar Elemento</button>
+        <button class="btn btn-primary mt-2" onclick="performOperation('peek')">Ver Elemento Superior</button>
+        <button class="btn btn-primary mt-2" onclick="performOperation('size')">Tamaño de la Pila</button>
+        <button class="btn btn-primary mt-2" onclick="performOperation('is_empty')">¿Está Vacía?</button>
     </div><br/>
 
     <div id="data-grid" class="mt-4">
@@ -40,69 +58,46 @@
 {% block extra_js %}
 {{ block.super }}
 <script>
-    const pageSize = 5;
-    let currentPage = 1;
-    let totalPages = 0;
-    let data = [];
-
-    function showPilaData() {
+    function performOperation(operation) {
         const dataGrid = document.getElementById('data-grid');
+        let url = `/stack/?operation=${operation}`;
+        let method = 'GET';
+        let body = null;
 
-        fetch(`/pila/`)
+        if (operation === 'push') {
+            url = '/stack/';
+            method = 'POST';
+            const id = document.getElementById('element-id').value;
+            const name = document.getElementById('element-name').value;
+            const value = document.getElementById('element-value').value;
+            body = JSON.stringify({ item: { id: id, nombre: name, valor: value } });
+        } else if (operation === 'pop') {
+            url = '/stack/';
+            method = 'DELETE';
+        }
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        })
             .then(response => response.json())
             .then(result => {
-                data = result.stack;
-                totalPages = Math.ceil(data.length / pageSize);
-                currentPage = 1;
-                renderTable();
+                if (result.success) {
+                    dataGrid.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+                    if (operation === 'push') {
+                        document.getElementById('push-form').reset();
+                    }
+                } else {
+                    dataGrid.innerHTML = `<p>${result.error}</p>`;
+                }
             })
             .catch(error => {
-                console.error('Error al realizar la búsqueda:', error);
-                dataGrid.innerHTML = '<p>Error al realizar la búsqueda. Intente nuevamente.</p>';
+                console.error('Error al realizar la operación:', error);
+                dataGrid.innerHTML = '<p>Error al realizar la operación. Intente nuevamente.</p>';
             });
-    }
-
-    function renderTable() {
-        const dataGrid = document.getElementById('data-grid');
-        const start = (currentPage - 1) * pageSize;
-        const end = start + pageSize;
-        const paginatedData = data.slice(start, end);
-
-        const resultTable = `
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${paginatedData.map(item => `
-                            <tr>
-                                <td>${item.id}</td>
-                                <td>${item.nombre}</td>
-                                <td>${item.valor}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination">
-                <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(currentPage - 1)">Anterior</button>
-                <span>Página ${currentPage} de ${totalPages}</span>
-                <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(currentPage + 1)">Siguiente</button>
-            </div>
-        `;
-        dataGrid.innerHTML = resultTable;
-    }
-
-    function changePage(page) {
-        if (page < 1 || page > totalPages) return;
-        currentPage = page;
-        renderTable();
     }
 </script>
 {% endblock %}
-
