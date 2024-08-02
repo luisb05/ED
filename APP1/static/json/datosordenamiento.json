@@ -1,0 +1,32 @@
+{
+    "bubble": [
+        {"id": 1, "nombre": "Burbuja 1", "valor": 34},
+        {"id": 2, "nombre": "Burbuja 2", "valor": 7},
+        {"id": 3, "nombre": "Burbuja 3", "valor": 23},
+        {"id": 4, "nombre": "Burbuja 4", "valor": 32}
+    ],
+    "selection": [
+        {"id": 1, "nombre": "Seleccion 1", "valor": 14},
+        {"id": 2, "nombre": "Seleccion 2", "valor": 17},
+        {"id": 3, "nombre": "Seleccion 3", "valor": 13},
+        {"id": 4, "nombre": "Seleccion 4", "valor": 12}
+    ],
+    "insertion": [
+        {"id": 1, "nombre": "Insercion 1", "valor": 24},
+        {"id": 2, "nombre": "Insercion 2", "valor": 27},
+        {"id": 3, "nombre": "Insercion 3", "valor": 33},
+        {"id": 4, "nombre": "Insercion 4", "valor": 22}
+    ],
+    "quick": [
+        {"id": 1, "nombre": "Rapido 1", "valor": 44},
+        {"id": 2, "nombre": "Rapido 2", "valor": 47},
+        {"id": 3, "nombre": "Rapido 3", "valor": 43},
+        {"id": 4, "nombre": "Rapido 4", "valor": 42}
+    ],
+    "merge": [
+        {"id": 1, "nombre": "Mezcla 1", "valor": 54},
+        {"id": 2, "nombre": "Mezcla 2", "valor": 57},
+        {"id": 3, "nombre": "Mezcla 3", "valor": 53},
+        {"id": 4, "nombre": "Mezcla 4", "valor": 52}
+    ]
+}

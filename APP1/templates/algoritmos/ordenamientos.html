@@ -26,13 +26,16 @@
 
 {% block content %}
 <section class="container my-4">
-    <h3>Algoritmos de Búsqueda</h3>
+    <h3>Algoritmos de Ordenamiento</h3>
     
     <div class="mb-4">
-        <button class="btn btn-primary" onclick="showData('linear', 'A')">Búsqueda Lineal</button>
-        <button class="btn btn-primary" onclick="showData('binary', 'B')">Búsqueda Binaria</button>
-        <button class="btn btn-primary" onclick="showData('hash', 'C')">Búsqueda por Hash</button>
+        <button class="btn btn-primary" onclick="showData('bubble')">Ordenamiento por Burbuja</button>
+        <button class="btn btn-primary" onclick="showData('selection')">Ordenamiento por Selección</button>
+        <button class="btn btn-primary" onclick="showData('insertion')">Ordenamiento por Inserción</button>
+        <button class="btn btn-primary" onclick="showData('quick')">Ordenamiento Rápido</button>
+        <button class="btn btn-primary" onclick="showData('merge')">Ordenamiento por Mezcla</button>
     </div><br/>
+
     <div id="data-grid" class="mt-4">
     </div>
 </section>
@@ -46,10 +49,10 @@
     let totalPages = 0;
     let data = [];
 
-    function showData(type, objetivo) {
+    function showData(algorithm) {
         const dataGrid = document.getElementById('data-grid');
 
-        fetch(`/search/?type=${type}&objetivo=${objetivo}`)
+        fetch(`/sorting/?algorithm=${algorithm}`)
             .then(response => response.json())
             .then(result => {
                 data = result;
@@ -106,11 +109,4 @@
     }
 </script>
 {% endblock %}
-
-
-
-
-
-
-
 

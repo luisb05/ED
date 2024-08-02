@@ -10,8 +10,13 @@ def index_view(request):
 def busquedas_view(request):
     return render(request, 'algoritmos/busquedas.html')
 
+def ordenamiento_view(request):
+    return render(request, 'algoritmos/ordenamientos.html')
+
+#Algoritmo de Busqueda
+
 def load_data():
-    file_path = os.path.join('app1', 'static', 'json', 'datos.json')
+    file_path = os.path.join('app1', 'static', 'json', 'datosbusquedas.json')
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -86,4 +91,104 @@ def search(request):
     print(f"Resultados de búsqueda: {result}")
     return JsonResponse(result, safe=False)
 
+
+#Algoritmo de Ordenamiento
+
+def load_dataOrdenamiento(algorithm):
+    file_path = os.path.join('app1', 'static', 'json', 'datosordenamiento.json')
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        return data.get(algorithm, [])
+    except Exception as e:
+        print(f"Error al cargar el archivo JSON: {e}")
+        return []
+
+# Funciones de Ordenamiento
+def bubble_sort(data):
+    data = list(data)
+    n = len(data)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if data[j]['valor'] > data[j+1]['valor']:
+                data[j], data[j+1] = data[j+1], data[j]
+    return data
+
+def selection_sort(data):
+    data = list(data)
+    n = len(data)
+    for i in range(n):
+        min_idx = i
+        for j in range(i+1, n):
+            if data[j]['valor'] < data[min_idx]['valor']:
+                min_idx = j
+        data[i], data[min_idx] = data[min_idx], data[i]
+    return data
+
+def insertion_sort(data):
+    data = list(data)
+    for i in range(1, len(data)):
+        key = data[i]
+        j = i - 1
+        while j >= 0 and key['valor'] < data[j]['valor']:
+            data[j + 1] = data[j]
+            j -= 1
+        data[j + 1] = key
+    return data
+
+def quick_sort(data):
+    if len(data) <= 1:
+        return data
+    pivot = data[len(data) // 2]['valor']
+    left = [x for x in data if x['valor'] < pivot]
+    middle = [x for x in data if x['valor'] == pivot]
+    right = [x for x in data if x['valor'] > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+
+def merge_sort(data):
+    if len(data) <= 1:
+        return data
+    def merge(left, right):
+        result = []
+        i = j = 0
+        while i < len(left) and j < len(right):
+            if left[i]['valor'] < right[j]['valor']:
+                result.append(left[i])
+                i += 1
+            else:
+                result.append(right[j])
+                j += 1
+        result.extend(left[i:])
+        result.extend(right[j:])
+        return result
+    mid = len(data) // 2
+    left = merge_sort(data[:mid])
+    right = merge_sort(data[mid:])
+    return merge(left, right)
+
+# Vista de Ordenamiento
+def sorting_view(request):
+    algorithm = request.GET.get('algorithm')
+    data = load_dataOrdenamiento(algorithm)
+
+    if not data:
+        return JsonResponse({'error': 'Datos no encontrados'}, status=404)
+
+    try:
+        if algorithm == 'bubble':
+            sorted_data = bubble_sort(data)
+        elif algorithm == 'selection':
+            sorted_data = selection_sort(data)
+        elif algorithm == 'insertion':
+            sorted_data = insertion_sort(data)
+        elif algorithm == 'quick':
+            sorted_data = quick_sort(data)
+        elif algorithm == 'merge':
+            sorted_data = merge_sort(data)
+        else:
+            return JsonResponse({'error': 'Algoritmo no reconocido'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse(sorted_data, safe=False)
 
