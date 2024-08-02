@@ -7,14 +7,72 @@ import os
 def index_view(request):
     return render(request, 'algoritmos/index.html')
 
+def pilas_view(request):
+    return render(request, 'algoritmos/pilas.html')
+
 def busquedas_view(request):
     return render(request, 'algoritmos/busquedas.html')
 
 def ordenamiento_view(request):
     return render(request, 'algoritmos/ordenamientos.html')
 
-#Algoritmo de Busqueda
+#Esctructura de Datos lineales
+def load_data_pila():
+    file_path = os.path.join('app1', 'static', 'json', 'datospilas.json')
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        return data.get('pila', [])
+    except Exception as e:
+        print(f"Error al cargar el archivo JSON: {e}")
+        return []
 
+# Funciones de Pilas       
+def esta_vacia(pila):
+    return len(pila) == 0
+
+def push(pila, item):
+    pila.append(item)
+
+def pop(pila):
+    if not esta_vacia(pila):
+        return pila.pop()
+    else:
+        raise IndexError("La pila está vacía")
+
+def peek(pila):
+    if not esta_vacia(pila):
+        return pila[-1]
+    else:
+        raise IndexError("La pila está vacía")
+
+def tamano(pila):
+    return len(pila)
+
+# Vista de Pilas
+def pila_view(request):
+    pila = load_data_pila()
+
+    if not pila:
+        return JsonResponse({'error': 'Datos no encontrados'}, status=404)
+
+    try:
+        # Ejemplo de operaciones con la pila
+        push(pila, {"id": 6, "nombre": "Elemento 6", "valor": 60})
+        top_element = peek(pila)
+        pop(pila)
+
+        result = {
+            "stack": pila,
+            "top_element": top_element
+        }
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse(result, safe=False)
+
+
+#Algoritmo de Busqueda
 def load_data():
     file_path = os.path.join('app1', 'static', 'json', 'datosbusquedas.json')
     try:
@@ -90,7 +148,6 @@ def search(request):
 
     print(f"Resultados de búsqueda: {result}")
     return JsonResponse(result, safe=False)
-
 
 #Algoritmo de Ordenamiento
 
@@ -191,4 +248,5 @@ def sorting_view(request):
         return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse(sorted_data, safe=False)
+
 

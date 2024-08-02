@@ -163,24 +163,24 @@
         <div id="submenu" class="submenu">
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Estructuras de datos básicas:</strong> <span class="badge badge-primary badge-pill">{{ num_books }}</span>
+                    <strong>Estructuras de datos básicas:</strong>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Pilas:</strong> <span class="badge badge-primary badge-pill">{{ num_instances_available }}</span>
+                    <a href="{% url 'pilas' %}" class="text-decoration-none text-dark">
+                        <strong>Pilas:</strong>
+                    </a>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Colas:</strong> <span class="badge badge-primary badge-pill">{{ num_authors }}</span>
+                    <strong>Colas:</strong>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <a href="{% url 'busquedas' %}" class="text-decoration-none text-dark">
-                        <strong>Algoritmos de Busquedas:</strong> 
-                        <span class="badge badge-primary badge-pill">{{ num_instances }}</span>
+                        <strong>Algoritmos de Busquedas:</strong>
                     </a>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <a href="{% url 'ordenamientos' %}" class="text-decoration-none text-dark">
-                        <strong>Algoritmos de ordenamiento:</strong> 
-                        <span class="badge badge-primary badge-pill">{{ num_instances }}</span>
+                        <strong>Algoritmos de ordenamiento:</strong>
                     </a>
                 </li>
             </ul>
