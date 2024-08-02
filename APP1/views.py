@@ -4,12 +4,17 @@ from django.shortcuts import render
 from collections import deque
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-
+from .models import Lista
 import json
 import os
 
 def index_view(request):
     return render(request, 'algoritmos/index.html')
+
+def ver_lista(request):
+    lista2 = Lista.objects.all()
+    context = {'lista3': lista2}
+    return render(request, 'algoritmos/basica.html', context)
 
 def colas_view(request):
     return render(request, 'algoritmos/colas.html')

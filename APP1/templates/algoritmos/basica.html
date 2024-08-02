@@ -1,0 +1,133 @@
+{% extends 'algoritmos/index.html' %}
+{% load static %}
+{% block extra_css %}
+<style>
+    #data-grid {
+        overflow-x: auto;
+        padding: 20px;
+    }
+    .table {
+        min-width: 600px;
+        margin: 20px 0;
+    }
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .pagination button {
+        margin: 0 5px;
+        padding: 5px 10px;
+    }
+    .pagination span {
+        margin: 0 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container my-4">
+    <h3>Funciones Basicas</h3>
+    <a>Las estructuras de control en Python incluyen condicionales lógicos (if, elif, else) y bucles 
+        (for, while). Estas estructuras permiten dirigir el flujo de ejecución del programa en función 
+        de condiciones específicas o repetir un bloque de código múltiples veces.
+
+        Estas estructuras proveen formas simplificadas de escribir ciertos fragmentos del código y 
+        generar instrucciones que puedan ser ejecutadas dependiendo de ciertas condiciones y un número 
+        controlado de veces.</a>
+       <hr></hr>
+    <div class="mb-4">
+        <button class="btn btn-primary" onclick="Listas()">Listas</button>
+        <button class="btn btn-primary" onclick="tuplas()">Tuplas</button>
+        <button class="btn btn-primary" onclick="conjuntos()">Conjuntos</button>
+        <button class="btn btn-primary" onclick="diccionarios()">Diccionarios</button>
+      
+    </div><br/>
+    <div id="data-grid" class="mt-4">
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+
+
+<script>
+    const pageSize = 5;
+    let currentPage = 1;
+    let totalPages = 0;
+    let data = [];
+
+    function Listas() {
+        const dataGrid = document.getElementById('data-grid');
+        renderTable1()
+       
+    }
+
+    function tuplas() {
+        const dataGrid = document.getElementById('data-grid');
+        renderTable1()
+       
+    }
+
+
+    function conjuntos() {
+        const dataGrid = document.getElementById('data-grid');
+        renderTable1()
+       
+    }
+
+    function diccionarios() {
+        const dataGrid = document.getElementById('data-grid');
+        renderTable1()
+       
+    }
+
+
+    function renderTable1() {
+        const dataGrid = document.getElementById('data-grid');
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const paginatedData = data.slice(start, end);
+
+        const resultTable = `
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td>Nombre 1</td>
+                        <td>Nombre 2</td>
+                        <td>Fecha Inicio</td>
+                        <td>Fecha Fin</td>
+      
+                    </tr>
+                </thead>
+        <tbody>
+            {%if lista3%}
+            {%for item in lista3%}
+                <tr>
+                    <td>{{item.nombre1}}</td>
+                    <td>{{item.nombre2}}</td>
+                    <td>{{item.fecha_ingreso}}</td>
+                    <td>{{item.fecha_egreso}}</td>
+                </tr>
+            {%endfor%}
+
+            {%else%}
+            <h1>No hay registros de mascotas</h1>
+            {%endif%}
+    </tbody>
+    </table>
+       </div> `;
+        dataGrid.innerHTML = resultTable;
+    }
+
+    function changePage(page) {
+        if (page < 1 || page > totalPages) return;
+        currentPage = page;
+        renderTable();
+    }
+</script>
+
+
+
+{% endblock %}

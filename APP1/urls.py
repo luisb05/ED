@@ -13,5 +13,6 @@ urlpatterns = [
     path('stack/', views.stack_view, name='stack_view'), 
     path('search/', views.search, name='search'), 
     path('sorting/', views.sorting_view, name='sorting_view'),
+    path('basica/', views.ver_lista, name='basica'),
     path('admin/', admin.site.urls),
 ]
